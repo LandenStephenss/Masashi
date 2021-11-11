@@ -2,15 +2,21 @@
   "name": "masashi",
   "version": "0.0.1",
   "main": "out/main.js",
+  "files": [
+    "src"
+  ],
   "scripts": {
     "build": "tsc",
     "lint": "eslint src",
-    "lint:fix": "eslint --fix src || true"
+    "lint:fix": "eslint --fix src || true",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint"
   },
   "type": "module",
   "dependencies": {
     "dotenv": "^10.0.0",
-    "eris": "^0.15.1"
+    "eris": "^0.15.1",
+    "mongodb": "^4.1.4"
   },
   "devDependencies": {
     "@apacheli/eslint-config-ts": "github:apacheli/eslint-config-ts",
