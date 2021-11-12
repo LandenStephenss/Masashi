@@ -1,55 +1,80 @@
-import Client from '../structures/Client.js';
 import { Message } from 'eris';
+import Event from '../structures/Event.js';
 
-export default class MessageEvent {
-  constructor(public client: Client) {
-    this.client = client;
-  }
+export default class MessageCreateEvent extends Event {
+  name = 'messageCreate';
 
   async run(message: Message) {
-    // do some leveling stuff up here, possibly automod idk depends;
+    if (message.author.bot) {
+      return;
+    }
 
-    if (message.content.startsWith(process.env.PREFIX as string)) {
-      /* eslint-disable  @typescript-eslint/no-explicit-any */
-      let Command: any = message.content
-        .split(' ')[0]
-        .slice(process.env.PREFIX?.length)
-        .toLowerCase();
-      const Args = message.content.split(' ')
-        .slice(1);
+    const prefix = process.env['PREFIX']!;
+    if (!message.content.startsWith(prefix)) {
+      return;
+    }
 
-      if (
-        this.client.commands.has(Command) ||
-        this.client.aliases.has(Command)
-      ) {
-        // @ts-ignore
-        Command =
-          this.client.commands.get(Command) ||
-          this.client.commands.get(this.client.aliases.get(Command) as string);
+    const content = message.content.substring(prefix.length);
+    const matches = content.matchAll(/('.+?'|".+?"|`.+?`)|[\S]+/g);
 
-        if (!process.env.DEVELOPERS?.split(',')
-          .includes(message.author.id)) {
-          this.client.createMessage(message.channel.id, {
-            embed: { title: 'You must be a developer to run this command' },
-          });
-        }
-        else if(!Command.config.enabled) {
-          return;
-        }
-        else {
-          const res = await Command.run({
-            message,
-            args: Args
-          });
+    const commandName: string = matches.next().value[0];
+    const command = this.client.getCommand(commandName);
+    if (!command) {
+      return;
+    }
 
-          if(res) {
-            if(res.embed && res.embed.color) {
-              res.embed.color = parseInt('B3EFB2', 16);
-            }
-            this.client.createMessage(message.channel.id, res);
-          }
-        }
+    const contextArgs: Record<string, unknown> = {};
+
+    for (const commandArgName in command.args) {
+      const arg: RegExpMatchArray = matches.next().value;
+      const commandArg = command.args[commandArgName];
+
+      if (!arg && !commandArg.optional) {
+        this.client.createMessage(message.channel.id, 'missing argument!');
+        return;
       }
+
+      if (!arg && commandArg.optional) {
+        break;
+      }
+
+      const argInput = commandArg.matchRest
+        ? content.slice(arg.index)
+        : arg[1]?.slice(1, -1) ?? arg[0];
+
+      const value = await commandArg.resolve(argInput, message);
+      if (!(await commandArg.validate?.(value, message) ?? true)) {
+        this.client.createMessage(message.channel.id, 'argument is invalid!');
+        return;
+      }
+
+      contextArgs[commandArgName] = value;
+
+      if (commandArg.matchRest) {
+        break;
+      }
+    }
+
+    const result = await command.run({
+      args: contextArgs,
+      message,
+      invokedAs: commandName,
+    });
+
+    if (!result) {
+      return;
+    }
+
+    const resultContent = typeof result === 'string' ? result : result.content;
+    const chunks = resultContent?.match(/[\s\S]{1,2000}/g);
+
+    await this.client.createMessage(message.channel.id, {
+      ...typeof result === 'string' ? undefined : result,
+      content: chunks?.shift(),
+    });
+
+    for (const chunk of chunks ?? []) {
+      await this.client.createMessage(message.channel.id, chunk);
     }
   }
 }
