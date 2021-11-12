@@ -1,4 +1,11 @@
-import { Client } from 'eris';
+import {
+  Client,
+  Member,
+  Message,
+  PartialEmoji,
+  PossiblyUncachedMessage,
+  Uncached
+} from 'eris';
 import { loadFiles } from '../util/loadFiles.js';
 import logger from '../util/logger.js';
 import  Command, { ExtendedCommand } from './Command.js';
@@ -15,6 +22,46 @@ export default class Masashi extends Client {
     }
     const alias = this.aliases.get(name);
     return alias ? this.commands.get(alias) : undefined;
+  }
+
+  awaitMessage(filter: (message: Message) => boolean, timeout: number) {
+    return new Promise<Message>((resolve, reject) => {
+      const listener = (messageToCollect: Message) => {
+        if (filter(messageToCollect)) {
+          this.off('messageCreate', listener);
+          resolve(messageToCollect);
+        }
+      };
+      this.on('messageCreate', listener);
+      setTimeout(() => {
+        this.off('messageCreate', listener);
+        reject(new Error('No message was collected in time.'));
+      }, timeout);
+    });
+  }
+
+  awaitReaction(
+    filter: (input: AwaitReactionInput) => boolean,
+    timeout: number
+  ) {
+    return new Promise<AwaitReactionInput>((resolve, reject) => {
+      const listener = (
+        message: PossiblyUncachedMessage,
+        emoji: PartialEmoji,
+        reactor: Uncached | Member
+      ) => {
+        const input = { message, emoji, reactor };
+        if (filter(input)) {
+          this.off('messageReactionAdd', listener);
+          resolve(input);
+        }
+      };
+      this.on('messageReactionAdd', listener);
+      setTimeout(() => {
+        this.off('messageReactionAdd', listener);
+        reject(new Error('No reaction was collected in time.'));
+      }, timeout);
+    });
   }
 
   async loadCommands() {
@@ -47,4 +94,10 @@ export default class Masashi extends Client {
     logger.info('Connecting to Discord...');
     await this.connect();
   }
+}
+
+interface AwaitReactionInput {
+  message: PossiblyUncachedMessage,
+  emoji: PartialEmoji,
+  reactor: Uncached | Member
 }

@@ -1,7 +1,7 @@
 import type { Message, MessageContent } from 'eris';
 import type Masashi from './Masashi.js';
 
-interface CommandData {
+export interface CommandData {
   name: string,
   description?: string,
   usage?: string,
@@ -44,7 +44,13 @@ export default abstract class Command {
     };
   }
   abstract run(context: CommandContext<this>):
-  void | MessageContent | Promise<MessageContent>;
+  void | MessageContent | Promise<void | MessageContent>;
+
+  middleware(context: CommandContext<this>):
+  boolean | MessageContent | Promise<boolean | MessageContent>;
+  middleware() {
+    return true;
+  }
 }
 
 export type ExtendedCommand = new (client: Masashi) => Command;
