@@ -1,11 +1,12 @@
-import Command, { CommandContext } from '../../structures/Command.js';
+import { CommandContext } from '../../structures/Command.js';
 import Client from '../../structures/Masashi.js';
+import InfoCommand from '../../structures/categories/InfoCommand.js';
 
-export default class Help extends Command {
+export default class Help extends InfoCommand {
   args = {
     command: {
       resolve: (input: string) => this.client.getCommand(input)!,
-      //validate: (command: unknown) => command !== undefined,
+      validate: (command: unknown) => command !== undefined,
       optional: true,
     }
   };

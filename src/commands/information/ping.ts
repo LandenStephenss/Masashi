@@ -1,7 +1,7 @@
-import Command from '../../structures/Command.js';
 import Client from '../../structures/Masashi.js';
+import InfoCommand from '../../structures/categories/InfoCommand.js';
 
-export default class Ping extends Command {
+export default class Ping extends InfoCommand {
   constructor(public client: Client) {
     super({
       name: 'ping',
