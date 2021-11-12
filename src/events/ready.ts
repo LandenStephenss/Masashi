@@ -1,11 +1,11 @@
-import Client from '../structures/Client.js';
-import { logger } from '../util/logger.js';
-export default class Ready {
-  constructor(public client: Client) {
-    this.client = client;
-  }
+import Event from '../structures/Event.js';
+import logger from '../util/logger.js';
+
+export default class ReadyEvent extends Event {
+  name = 'ready';
 
   run() {
-    logger.info(`${this.client.user.username} is now online!`);
+    const { username, discriminator } = this.client.user;
+    logger.info(`${username}#${discriminator} is now online!`);
   }
 }

@@ -1,5 +1,5 @@
 import Command from '../../structures/Command.js';
-import Client from '../../structures/Client.js';
+import Client from '../../structures/Masashi.js';
 
 export default class Ping extends Command {
   constructor(public client: Client) {
@@ -8,10 +8,9 @@ export default class Ping extends Command {
       description: 'A basic ping command',
       aliases: ['latency'],
     });
-    this.client = client;
   }
 
   run() {
-    return { content: `Pong! ⏳ ${this.client.shards.get(0)?.latency}ms` };
+    return `Pong! ⏳ ${this.client.shards.get(0)?.latency}ms`;
   }
 }

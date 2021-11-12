@@ -1,17 +1,34 @@
-export default class Command {
-  public help: Object;
-  public config: Object;
+import type { Message, MessageContent } from 'eris';
+import type Masashi from './Masashi.js';
+
+interface CommandData {
+  name: string,
+  description?: string,
+  usage?: string,
+  category?: string,
+  cooldown?: number,
+  aliases?: string[],
+  nsfw?: boolean,
+  developer?: boolean,
+  enabled?: boolean
+}
+
+export default abstract class Command {
+  args: Record<string, CommandArgument> = {};
+  help;
+  config;
+
   constructor({
-    name = 'Command',
+    name,
     description = 'N/A',
     usage = '{c}',
     category = 'Miscellaneous',
     cooldown = 3000,
-    aliases = new Array(),
+    aliases = [],
     nsfw = false,
     developer = false,
     enabled = true,
-  }) {
+  }: CommandData) {
     this.help = {
       name,
       description,
@@ -26,5 +43,24 @@ export default class Command {
       enabled,
     };
   }
+  abstract run(context: CommandContext<this>):
+  void | MessageContent | Promise<MessageContent>;
+}
 
+export type ExtendedCommand = new (client: Masashi) => Command;
+
+export interface CommandArgument {
+  description?: string,
+  resolve: (input: string, message: Message) => unknown,
+  validate?: (value: unknown, message: Message) => boolean | Promise<boolean>,
+  matchRest?: boolean,
+  optional?: boolean
+}
+
+export interface CommandContext<T extends Command> {
+  message: Message,
+  args: {
+    [k in keyof T['args']]: ReturnType<T['args'][k]['resolve']>
+  },
+  invokedAs: string
 }

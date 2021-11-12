@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
+    "declaration": false,
     "outDir": "out"
   },
-  "extends": "@apacheli/tsconfig"
+  "extends": "@apacheli/tsconfig",
+  "include": [
+    "src"
+  ]
 }
