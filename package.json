@@ -22,6 +22,7 @@
     "@apacheli/eslint-config-ts": "github:apacheli/eslint-config-ts",
     "@apacheli/tsconfig": "github:apacheli/tsconfig",
     "@types/node": "^16.11.7",
+    "@types/ws": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "eslint": "^8.2.0",
