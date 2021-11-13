@@ -4,16 +4,25 @@ import {
   Message,
   PartialEmoji,
   PossiblyUncachedMessage,
-  Uncached
+  Uncached,
 } from 'eris';
 import { loadFiles } from '../util/loadFiles.js';
 import logger from '../util/logger.js';
-import  Command, { ExtendedCommand } from './Command.js';
+import Command, { ExtendedCommand } from './Command.js';
 import { ExtendedEvent } from './Event.js';
+import Database from './database/Database.js';
+import Market from './Market.js';
 
 export default class Masashi extends Client {
+  db = new Database();
   commands = new Map<string, Command>();
   aliases = new Map<string, string>();
+  market = new Market(this);
+
+  resolveUser(user: string) {
+    return this.users.get(/<@!?(\d+)>/g.exec(user)?.[1] ?? user)
+    ?? this.users.find((u) => u.username.toLowerCase() === user.toLowerCase());
+  }
 
   getCommand(name: string) {
     const command = this.commands.get(name);
@@ -88,6 +97,7 @@ export default class Masashi extends Client {
   async start() {
     logger.info('Starting Masashi...');
     await Promise.all([
+      this.db.start(),
       this.loadCommands(),
       this.loadEvents(),
     ]);

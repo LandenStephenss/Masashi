@@ -3,10 +3,10 @@ export enum Actions {
   'Kick' = 2,
   'Unban' = 3,
   'Mute' = 4,
-  'Soft-ban' = 5
+  'Soft-ban' = 5,
 }
 
-export interface Modlog {
+export default interface ModLog {
   case: number,
   reason: number,
   userID: string,

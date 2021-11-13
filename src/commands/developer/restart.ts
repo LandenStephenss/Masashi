@@ -5,7 +5,8 @@ export default class Restart extends DevCommand {
   constructor(public client: Client) {
     super({
       name: 'restart',
-      description: 'Restart the bot'
+      description: 'Restart the bot',
+      aliases: ['kys'],
     });
   }
 
@@ -14,6 +15,5 @@ export default class Restart extends DevCommand {
       this.client.disconnect({ reconnect: false });
       queueMicrotask(() => process.exit());
     });
-    return 'Restarting...';
   }
 }

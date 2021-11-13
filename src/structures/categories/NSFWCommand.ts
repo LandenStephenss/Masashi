@@ -14,7 +14,7 @@ export default abstract class NSFWCommand extends Command {
 
   middleware(context: CommandContext<this>) {
     return (context.message.channel as TextChannel).nsfw
-      ? true 
+      ? true
       : 'You must be in an NSFW channel to use this command!';
   }
 }

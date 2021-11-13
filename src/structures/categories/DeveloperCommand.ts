@@ -13,9 +13,9 @@ export default abstract class DeveloperCommand extends Command {
   }
 
   middleware(context: CommandContext<this>): boolean | MessageContent {
-    if(process.env.DEVELOPERS?.includes(context.message.author.id)) {
+    if (process.env.DEVELOPERS?.includes(context.message.author.id)) {
       return true;
-    } 
+    }
     else {
       return 'You must be a developer to run this command!';
     }

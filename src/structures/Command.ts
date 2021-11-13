@@ -43,11 +43,13 @@ export default abstract class Command {
       enabled,
     };
   }
-  abstract run(context: CommandContext<this>):
-  void | MessageContent | Promise<void | MessageContent>;
+  abstract run(
+    context: CommandContext<this>
+  ): void | MessageContent | Promise<void | MessageContent>;
 
-  middleware(context: CommandContext<this>):
-  boolean | MessageContent | Promise<boolean | MessageContent>;
+  middleware(
+    context: CommandContext<this>
+  ): boolean | MessageContent | Promise<boolean | MessageContent>;
   middleware() {
     return true;
   }
@@ -66,7 +68,7 @@ export interface CommandArgument {
 export interface CommandContext<T extends Command> {
   message: Message,
   args: {
-    [k in keyof T['args']]: ReturnType<T['args'][k]['resolve']>
+    [k in keyof T['args']]: ReturnType<T['args'][k]['resolve']>;
   },
   invokedAs: string
 }
