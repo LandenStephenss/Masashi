@@ -100,6 +100,7 @@ export default class Masashi extends Client {
       this.db.start(),
       this.loadCommands(),
       this.loadEvents(),
+      this.market.loadItems(),
     ]);
     logger.info('Connecting to Discord...');
     await this.connect();

@@ -17,12 +17,13 @@ export default class MessageCreateEvent extends Event {
     const warningMessage = await this.createMessage(
       message,
       `A coin drop appeared! Type \`${grab}\` to grab it! The drop will` +
-      ` disappear in ${timeout / 1000} seconds!`
+        ` disappear in ${timeout / 1000} seconds!`,
+      false
     );
 
     const collected = await this.client
       .awaitMessage(
-        (msg) => !message.author.bot && msg.content === grab,
+        (msg) => !message.author.bot && msg.content.toLowerCase() === grab,
         timeout
       )
       .catch(() => null);
@@ -30,12 +31,12 @@ export default class MessageCreateEvent extends Event {
     await this.deleteMessages(message.channel.id, warningMessage);
 
     if (!collected) {
-      await this.createMessage(message, 'The coin drop got away...');
+      await this.createMessage(message, 'The coin drop got away...', false);
     }
     else {
       const coinDrop = Math.floor(Math.random() * (500 - 250)) + 250;
-      const amount = coinDrop + Math.floor(coinDrop * multiplier / 10);
-      await this.createMessage(message, {
+      const amount = coinDrop + Math.floor((coinDrop * multiplier) / 10);
+      await this.createMessage(collected, {
         content: `You grabbed the coin drop and gained ${amount} coins!`,
         // messageReference: {
         //   messageID: collected.id,
@@ -72,10 +73,15 @@ export default class MessageCreateEvent extends Event {
       return;
     }
     const isBlacklisted = await message.author.isBlacklisted();
-    if(isBlacklisted) {
+    if (isBlacklisted) {
       return;
     }
-    queueMicrotask(() => this.manageDrops(message));
+    try {
+      queueMicrotask(() => this.manageDrops(message));
+    }
+    catch (e) {
+      console.error(e);
+    }
 
     const prefix = await message.channel.guild.getPrefix()!;
     if (!message.content.startsWith(prefix)) {
@@ -148,7 +154,6 @@ export default class MessageCreateEvent extends Event {
     }
 
     const result = await command.run(context);
-
     if (!result) {
       return;
     }
@@ -156,21 +161,31 @@ export default class MessageCreateEvent extends Event {
     await this.createMessage(message, result);
   }
 
-  async createMessage(message: Message, data: MessageContent) {
+  async createMessage(
+    message: Message,
+    data: MessageContent,
+    reference: boolean = true
+  ) {
     const content = typeof data === 'string' ? data : data.content;
     const chunks = content?.match(/[\s\S]{1,2000}/g);
 
+    if (typeof data !== 'string' && data.embed && !data.embed.color) {
+      data.embed.color = 12202546;
+    }
     const sent = [];
 
-    sent.push(
-      await this.client.createMessage(message.channel.id, {
-        ...(typeof data === 'string' ? undefined : data),
-        content: chunks?.shift(),
-        messageReference: {
-          messageID: message.id,
-        }
-      })
-    );
+    const msgData = {
+      ...(typeof data === 'string' ? undefined : data),
+      content: chunks?.shift(),
+    };
+
+    if (reference) {
+      msgData.messageReference = {
+        messageID: message.id,
+      };
+    }
+
+    sent.push(await this.client.createMessage(message.channel.id, msgData));
 
     for (const chunk of chunks ?? []) {
       sent.push(await this.client.createMessage(message.channel.id, chunk));

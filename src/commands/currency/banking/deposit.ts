@@ -1,11 +1,12 @@
-import CurrencyCommand from '../../structures/categories/CurrencyCommand.js';
-import Client from '../../structures/Masashi';
-import { CommandContext } from '../../structures/Command';
+import CurrencyCommand from '../../../structures/categories/CurrencyCommand.js';
+import Client from '../../../structures/Masashi';
+import { CommandContext } from '../../../structures/Command';
 
 export default class Deposit extends CurrencyCommand {
   args = {
     amount: {
-      resolve: (amount: string) => amount === 'all' ? 'all' : parseInt(amount),
+      resolve: (amount: string) =>
+        amount === 'all' ? 'all' : parseInt(amount),
       validate: (amount: unknown) => amount === 'all' || amount === amount,
       optional: false,
     },
@@ -27,6 +28,10 @@ export default class Deposit extends CurrencyCommand {
       return 'You deposited all your coins into your bank.';
     }
     await message.author.addToBank(amount);
-    return `You deposited ${amount} coins.`;
+    return {
+      embed: {
+        title: `You deposited ${amount} coins`,
+      },
+    };
   }
 }

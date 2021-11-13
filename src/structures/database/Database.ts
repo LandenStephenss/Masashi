@@ -1,9 +1,9 @@
 import { MongoClient, Collection } from 'mongodb';
 import Guild, { AutoModSettings } from './DatabaseGuild.js';
 import User, { Booster } from './DatabaseUser.js';
-import type { ItemType } from '../Item.js';
+import Item, { ItemType } from '../Item.js';
 import logger from '../../util/logger.js';
-
+import type { Guild as erisGuild } from 'eris';
 export default class Database {
   userDB!: Collection<User>;
   guildDB!: Collection<Guild>;
@@ -28,6 +28,16 @@ export default class Database {
     ) {
       await this.guildDB.insertOne(new Guild(guildID));
     }
+  }
+
+  async getCurrencyLeaderboard(guild: erisGuild) {
+    let arr = await this.userDB.find()
+      .toArray();
+    arr = arr
+      .filter((user: User) => guild.members.has(user._id))
+      .sort((a, b) => b.currency.wallet - a.currency.wallet)
+      .slice(0, 10);
+    return arr;
   }
 
   async getPrefix(guildID: string) {
@@ -178,7 +188,7 @@ export default class Database {
       }
     );
   }
-    
+
   async removeCoinsFromBank(userID: string, amount: number) {
     await this.ensureUser(userID);
     const currentBank = await this.getUsersBank(userID);
@@ -278,11 +288,11 @@ export default class Database {
 
   async getInventory(userID: string) {
     await this.ensureUser(userID);
-    const user = await this.userDB.findOne({ _id: userID });
+    const user = await this.userDB.findOne({ _id: userID })!;
     return user?.inventory;
   }
 
-  async addItem(userID: string, item: ItemType, amount: number) {
+  async addItem(userID: string, item: Item, amount: number) {
     await this.ensureUser(userID);
     const inventory = await this.getInventory(userID);
 
@@ -290,7 +300,7 @@ export default class Database {
       ...inventory,
       [item.name]: {
         ...item,
-        amount: (inventory![item.name].amount ?? 0) + amount,
+        amount: (inventory![item.name]?.amount ?? 0) + amount,
       },
     };
 
@@ -303,7 +313,7 @@ export default class Database {
   async removeItem(userID: string, item: ItemType, amount: number) {
     await this.ensureUser(userID);
     const inventory = await this.getInventory(userID);
-    if (inventory![item.name].amount - amount < 0) {
+    if (inventory![item.name]?.amount - amount < 0) {
       return;
     }
     const newInventory = {
@@ -331,10 +341,16 @@ export default class Database {
     );
   }
 
+  async deleteUser(userID: string) {
+    await this.ensureUser(userID);
+    await this.userDB.deleteOne({
+      _id: userID,
+    });
+  }
+
   async giveBooster(userID: string, booster: Booster) {
     await this.ensureUser(userID);
 
     console.log(booster);
   }
 }
-// phat file
