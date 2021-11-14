@@ -1,5 +1,7 @@
 import Client from '../../structures/Masashi.js';
 import InfoCommand from '../../structures/categories/InfoCommand.js';
+import formatNumber from '../../util/formatNumber.js';
+import parseTime from '../../util/parseUptime.js';
 
 export default class Ping extends InfoCommand {
   constructor(public client: Client) {
@@ -17,12 +19,12 @@ export default class Ping extends InfoCommand {
         fields: [
           {
             name: 'Guilds',
-            value: this.client.guilds.size.toString(),
+            value: formatNumber(this.client.guilds.size),
             inline: true,
           },
           {
             name: 'Users',
-            value: this.client.users.size.toString(),
+            value: formatNumber(this.client.users.size),
             inline: true,
           },
           {
@@ -34,7 +36,7 @@ export default class Ping extends InfoCommand {
           },
           {
             name: 'Uptime',
-            value: '69 years'
+            value: parseTime(this.client.uptime / 1000),
           },
         ],
         footer: {
