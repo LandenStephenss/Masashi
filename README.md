@@ -10,11 +10,10 @@ An all purpose Discord bot!
 
 Copy `config.env.example` and rename the copy `config.env`.
 
-```env
+```dotenv
 DISCORD_TOKEN=
-MONGO_URI=
-PREFIX=
-DEVELOPERS=
+DATABASE_URI=
+PREFIX=?
 ```
 
 To run the main application, simply run `node .`.

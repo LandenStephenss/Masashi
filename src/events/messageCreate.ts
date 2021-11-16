@@ -14,7 +14,7 @@ export default class MessageCreateEvent extends Event {
     ).guild.getPrefix()}grab`;
 
     const timeout = 10000 - multiplier * 500;
-    const warningMessage = await this.createMessage(
+    const warningMessage = await this.createMessages(
       message,
       `A coin drop appeared! Type \`${grab}\` to grab it! The drop will` +
         ` disappear in ${timeout / 1000} seconds!`,
@@ -31,12 +31,12 @@ export default class MessageCreateEvent extends Event {
     await this.deleteMessages(message.channel.id, warningMessage);
 
     if (!collected) {
-      await this.createMessage(message, 'The coin drop got away...', false);
+      await this.createMessages(message, 'The coin drop got away...', false);
     }
     else {
       const coinDrop = Math.floor(Math.random() * (500 - 250)) + 250;
       const amount = coinDrop + Math.floor((coinDrop * multiplier) / 10);
-      await this.createMessage(collected, {
+      await this.createMessages(collected, {
         content: `You grabbed the coin drop and gained ${amount} coins!`,
         // messageReference: {
         //   messageID: collected.id,
@@ -68,7 +68,7 @@ export default class MessageCreateEvent extends Event {
     }
   }
 
-  async run(message: Message) {
+  async run(message: Message<TextChannel>) {
     if (message.author.bot || message.channel.type !== 0) {
       return;
     }
@@ -95,7 +95,7 @@ export default class MessageCreateEvent extends Event {
     if (!commandName) {
       return;
     }
-    const command = this.client.getCommand(commandName);
+    const command = this.client.resolveCommand(commandName);
     if (!command) {
       return;
     }
@@ -108,7 +108,7 @@ export default class MessageCreateEvent extends Event {
 
       if (!arg) {
         if (!commandArg.optional) {
-          await this.createMessage(
+          await this.createMessages(
             message,
             `Missing argument \`${commandArgName}\`!`
           );
@@ -123,7 +123,7 @@ export default class MessageCreateEvent extends Event {
 
       const value = await commandArg.resolve(argInput, message);
       if (!((await commandArg.validate?.(value, message)) ?? true)) {
-        await this.createMessage(
+        await this.createMessages(
           message,
           `The input you provided for argument \`${
             commandArgName
@@ -148,7 +148,7 @@ export default class MessageCreateEvent extends Event {
     const middlewareResult = await command.middleware(context);
     if (middlewareResult !== true) {
       if (middlewareResult !== false) {
-        await this.createMessage(message, middlewareResult);
+        await this.createMessages(message, middlewareResult);
       }
       return;
     }
@@ -158,10 +158,10 @@ export default class MessageCreateEvent extends Event {
       return;
     }
 
-    await this.createMessage(message, result);
+    await this.createMessages(message, result);
   }
 
-  async createMessage(
+  async createMessages(
     message: Message,
     data: MessageContent,
     reference: boolean = true

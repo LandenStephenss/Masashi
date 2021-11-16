@@ -4,7 +4,7 @@ import InfoCommand from '../../structures/categories/InfoCommand.js';
 export default class Help extends InfoCommand {
   args = {
     command: {
-      resolve: (input: string) => this.client.getCommand(input)!,
+      resolve: (input: string) => this.client.resolveCommand(input)!,
       validate: (command: unknown) => command !== undefined,
       optional: true,
     },

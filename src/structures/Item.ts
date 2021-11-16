@@ -15,7 +15,7 @@ export default abstract class Item {
     public description: string,
     public price: number,
     public emoji: string,
-    public rarity: number
+    public rarity: number,
   ) {}
 
   middleware(): boolean | Promise<boolean> {

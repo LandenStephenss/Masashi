@@ -18,13 +18,14 @@ export default class Masashi extends Client {
   commands = new Map<string, Command>();
   aliases = new Map<string, string>();
   market = new Market(this);
+  developers: string[] = [];
 
   resolveUser(user: string) {
     return this.users.get(/<@!?(\d+)>/g.exec(user)?.[1] ?? user)
     ?? this.users.find((u) => u.username.toLowerCase() === user.toLowerCase());
   }
 
-  getCommand(name: string) {
+  resolveCommand(name: string) {
     const command = this.commands.get(name);
     if (command) {
       return command;
@@ -101,9 +102,17 @@ export default class Masashi extends Client {
       this.loadCommands(),
       this.loadEvents(),
       this.market.loadItems(),
+      this.getDevelopers(),
     ]);
     logger.info('Connecting to Discord...');
     await this.connect();
+  }
+
+  async getDevelopers() {
+    const appInfo = await this.getOAuthApplication();
+    for (const member of appInfo.team!.members) {
+      this.developers.push(member.user.id);
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import type { Message, MessageContent } from 'eris';
+import type { Message, MessageContent, TextChannel } from 'eris';
 import type Masashi from './Masashi.js';
 
 export interface CommandData {
@@ -66,7 +66,7 @@ export interface CommandArgument {
 }
 
 export interface CommandContext<T extends Command> {
-  message: Message,
+  message: Message<TextChannel>,
   args: {
     [k in keyof T['args']]: ReturnType<T['args'][k]['resolve']>;
   },

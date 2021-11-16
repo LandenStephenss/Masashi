@@ -4,12 +4,13 @@ import User, { Booster } from './DatabaseUser.js';
 import Item, { ItemType } from '../Item.js';
 import logger from '../../util/logger.js';
 import type { Guild as erisGuild } from 'eris';
+
 export default class Database {
   userDB!: Collection<User>;
   guildDB!: Collection<Guild>;
 
   async start() {
-    const mongo = new MongoClient(process.env['MONGO_URI']!);
+    const mongo = new MongoClient(process.env['DATABASE_URI']!);
     await mongo.connect();
     logger.info('connected to database!');
 

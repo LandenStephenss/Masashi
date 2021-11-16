@@ -10,6 +10,7 @@ export default class UserInfo extends InfoCommand {
       optional: true
     }
   };
+
   constructor(public client: Client) {
     super({
       name: 'userinfo',
@@ -20,9 +21,6 @@ export default class UserInfo extends InfoCommand {
   }
 
   run({message, args: { user }}: CommandContext<this>) {
-    if(message.channel.type !== 0) {
-      return;
-    }
     user = user ?? message.author;
     const guildMember = this.client.guilds.get(message.channel.guild.id)
       ?.members.get(user.id)!;
@@ -31,33 +29,23 @@ export default class UserInfo extends InfoCommand {
       embed: {
         author: {
           name: `${user.username}#${user.discriminator}`,
-          icon_url: user.dynamicAvatarURL('png', 512)
+          icon_url: user.avatarURL
         },
         fields: [
           {
             name: 'Created At',
-            value: new Date(user.createdAt)
-              .toLocaleString(),
+            value: `<t:${user.createdAt / 1000}>`,
             inline: true,
           },
           {
             name: 'Joined At',
-            value: new Date(guildMember.joinedAt)
-              .toLocaleString(),
+            value: `<t:${guildMember.joinedAt! / 1000}>`,
           },
           {
-            name: `Roles [${
-              guildMember.roles.filter(
-                // @ts-ignore: pls
-                (role) => role !== message.channel.guild.id
-              )
-                .length - 1
-            }]:`,
+            name: `${guildMember.roles.length} Roles`,
             value: guildMember.roles
-            // @ts-ignore: shut up
-              .filter((role) => role !== message.channel.guild.id)
               .map((role) => `<@&${role}>`)
-              .join(' ')
+              .join(' ') || 'No Roles.'
           }
         ],
         footer: {
