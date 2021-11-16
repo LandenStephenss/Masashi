@@ -30,7 +30,7 @@ export default class Inventory extends CurrencyCommand {
       .filter((item) => item[1].amount >= 1);
 
     const maxPages = Math.ceil(arr.length / 8);
-    let currentPage: number = page;
+    let currentPage: number = page ?? 1;
     if (maxPages < currentPage) {
       currentPage = maxPages;
     }
@@ -43,18 +43,22 @@ export default class Inventory extends CurrencyCommand {
       };
     }
     else {
+      arr.slice((currentPage - 1) * 8, (currentPage - 1) * 8 + 8);
       return {
         embed: {
           title: `${message.author.username}'s Inventory!`,
           fields: arr.map((item) => ({
             name:
-              item[1].name.split('')[0].toUpperCase() +
+              `${item[1].emoji} ${item[1].name.split('')[0].toUpperCase() +
               item[1].name.split('')
                 .slice(1)
                 .join('')
-                .toLowerCase(),
+                .toLowerCase()}`,
             value: item[1].amount.toString(),
           })),
+          footer: {
+            text: `Page: ${currentPage}`
+          }
         },
       };
     }
