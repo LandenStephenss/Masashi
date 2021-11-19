@@ -8,6 +8,7 @@ export default class Inventory extends CurrencyCommand {
       resolve: (page: string) => parseInt(page),
       validate: (page: unknown) => !isNaN(page as number),
       optional: true,
+      onFail: () => 'Are you really too stupid to put a page number?'
     },
   };
   constructor(public client: Client) {

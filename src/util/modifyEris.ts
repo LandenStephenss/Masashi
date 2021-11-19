@@ -29,7 +29,11 @@ declare module 'eris' {
     isBlacklisted(): Promise<boolean | undefined>,
     toggleBlacklist(): Promise<void>,
     giveBooster(): Promise<null>,
-    deleteUser(): Promise<void>
+    deleteUser(): Promise<void>,
+    getXP(): Promise<number>,
+    getLevel(): Promise<number>,
+    addXP(amount: number): Promise<void>,
+    increaseLevel(): Promise<void>
   }
 
   export interface Guild {
@@ -50,6 +54,22 @@ declare module 'eris' {
     getRichUsers(): Promise<DatabaseUser[]>
   }
 }
+
+User.prototype.addXP = function(amount: number) {
+  return this._client.db.addXP(this.id, amount);
+};
+
+User.prototype.increaseLevel = function() {
+  return this._client.db.increaseLevel(this.id);
+};
+
+User.prototype.getXP = function() {
+  return this._client.db.getXP(this.id);
+};
+
+User.prototype.getLevel = function() {
+  return this._client.db.getLevel(this.id);
+};
 
 User.prototype.removeItem = function(item: ItemType, amount: number) {
   return this._client.db.removeItem(this.id, item, amount);

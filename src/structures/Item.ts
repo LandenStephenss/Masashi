@@ -1,4 +1,4 @@
-import type { MessageContent, User } from 'eris';
+import type { User } from 'eris';
 
 export interface ItemType {
   name: string,
@@ -24,8 +24,7 @@ export default abstract class Item {
 
   // Will return a string, this message will be sent to chat whenever
   // the item is used.
-  use(user: User): MessageContent | Promise<MessageContent> {
-    user;
-    return 'test';
-  }
+  abstract use(
+    user: User
+  ): void | string | Promise<string>;
 }

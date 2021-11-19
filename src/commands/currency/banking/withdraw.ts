@@ -9,6 +9,7 @@ export default class Withdraw extends CurrencyCommand {
         amount === 'all' ? 'all' : parseInt(amount),
       validate: (amount: unknown) => amount === 'all' || amount === amount,
       optional: false,
+      onFail: () => 'Literally just say `all` or `42069`, it isn\'t that hard'
     },
   };
 
@@ -30,7 +31,10 @@ export default class Withdraw extends CurrencyCommand {
     await message.author.removeFromBank(amount);
     return {
       embed: {
-        title: `You withdrew ${amount} coins`,
+        author: {
+          name: `You withdrew ${amount} coins`,
+          icon_url: message.author.dynamicAvatarURL()
+        }
       }
     };
   }

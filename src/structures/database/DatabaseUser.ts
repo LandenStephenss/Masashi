@@ -27,6 +27,10 @@ export default class DatabaseUser {
     currency: {} as Record<string, unknown>,
     levels: {} as Record<string, unknown>,
   };
+  levels = {
+    level: 0,
+    xp: 0
+  };
 
   constructor(public _id: string) {}
 }

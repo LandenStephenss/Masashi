@@ -133,12 +133,17 @@ export default class Database {
   // USER METHODS
 
   async ensureUser(userID: string) {
-    if (
-      await this.userDB
-        .countDocuments({ _id: userID }, { limit: 1 })
-        .then((res) => res === 0)
-    ) {
-      await this.userDB.insertOne(new User(userID));
+    try {
+      if (
+        await this.userDB
+          .countDocuments({ _id: userID }, { limit: 1 })
+          .then((res) => res === 0)
+      ) {
+        await this.userDB.insertOne(new User(userID));
+      }
+    }
+    catch(e) {
+      console.error(e);
     }
   }
 
@@ -154,6 +159,42 @@ export default class Database {
     await this.userDB.updateOne(
       { _id: userID },
       { $set: { 'currency.wallet': currentCoins + amount } }
+    );
+  }
+
+  async getXP(userID: string) {
+    await this.ensureUser(userID);
+    const user = await this.userDB.findOne({_id: userID});
+    return user!.levels.xp;
+  }
+
+  async getLevel(userID: string) {
+    await this.ensureUser(userID);
+    const user = await this.userDB.findOne({_id: userID});
+    return user!.levels.level;
+  }
+
+  async addXP(userID: string, amount: number) {
+    await this.ensureUser(userID);
+    const currentXP = await this.getXP(userID)!;
+    await this.userDB.updateOne(
+      {_id: userID}, {$set: {'levels.xp': currentXP + amount}}
+    );
+
+  }
+
+  async increaseLevel(userID: string) {
+    await this.ensureUser(userID);
+    const oldLevel = await this.getLevel(userID);
+    await this.userDB.updateOne({_id: userID}, 
+      {$set: {'levels.level': oldLevel + 1}}
+    );
+  }
+
+  async setLevel(userID: string, newLevel: number) {
+    await this.ensureUser(userID);
+    await this.userDB.updateOne({_id: userID}, 
+      {$set: {'levels.level': newLevel}}
     );
   }
 
@@ -351,7 +392,7 @@ export default class Database {
 
   async giveBooster(userID: string, booster: Booster) {
     await this.ensureUser(userID);
-
+    // TODO;
     console.log(booster);
   }
 }

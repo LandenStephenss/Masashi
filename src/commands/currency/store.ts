@@ -10,6 +10,7 @@ export default class Store extends CurrencyCommand {
       validate: (action: unknown) =>
         action === 'buy' || action === 'sell' || action === 'page',
       optional: true,
+      onFail: () => 'You need to type `buy`, `sell`, or `page`!'
     },
     // this could also be a page number, so check for that too.
     item: {
@@ -26,6 +27,8 @@ export default class Store extends CurrencyCommand {
         }
       },
       optional: false,
+      onFail: () => 
+        'You need to type an item name, or a page number.'
     },
     amount: {
       resolve: (amount: string) => parseInt(amount),

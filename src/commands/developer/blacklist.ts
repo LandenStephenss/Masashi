@@ -8,6 +8,7 @@ export default class Restart extends DevCommand {
       resolve: (user: string) => this.client.resolveUser(user),
       validate: (user: unknown) => user !== undefined,
       optional: false,
+      onFail: () => 'lol idiot, use an actual user.'
     },
   };
   constructor(public client: Client) {

@@ -7,6 +7,8 @@ export default class Restart extends DevCommand {
     code: {
       resolve: (code: string) => code,
       validate: (code: unknown) => code !== undefined,
+      onMissing: () => 
+        'You kinda need to add some code for this to work retard.',
       optional: false,
       matchRest: true,
     },

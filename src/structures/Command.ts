@@ -61,6 +61,11 @@ export interface CommandArgument {
   description?: string,
   resolve: (input: string, message: Message) => unknown,
   validate?: (value: unknown, message: Message) => boolean | Promise<boolean>,
+  /** The input failed the valid function */
+  onFail?: (value: unknown, input: string, message: Message) =>
+  MessageContent | Promise<MessageContent>,
+  /** The response to a missing argument (only if NOT optional aka required) */
+  onMissing?: (message: Message) => MessageContent | Promise<MessageContent>,
   matchRest?: boolean,
   optional?: boolean
 }

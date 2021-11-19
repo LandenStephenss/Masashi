@@ -1,9 +1,3 @@
-export interface Level {
-  id: string,
-  level: number,
-  xp: number
-}
-
 export interface AutoModSettings {
   noNoWords: [],
   fastMsg: boolean,
@@ -25,7 +19,6 @@ export interface AutoModSettings {
 export default class DatabaseGuild {
   data = {
     modlog: [],
-    levels: [],
   };
   messages = {
     welcome: 'Welcome to {guild}, {user}!',

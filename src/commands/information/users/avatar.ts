@@ -26,7 +26,7 @@ export default class Avatar extends InfoCommand {
         image: {
           url: user.avatar === null ? 
             user.defaultAvatarURL : 
-            user.dynamicAvatarURL('png', 1028) 
+            user.dynamicAvatarURL() 
         },
         title: `${user.username}'s Avatar!`
       }

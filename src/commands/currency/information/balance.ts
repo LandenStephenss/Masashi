@@ -21,19 +21,20 @@ export default class Balance extends CurrencyCommand {
   }
   async run({ message, args: { user } }: CommandContext<this>) {
     user = user ?? message.author;
-    if(user.bot) {
+    if (user.bot) {
       return 'Bot\'s can\'t have a wallet!';
     }
     const userCoins = await user.getCoins();
     const bankCoins = await user.getBank();
     return {
       embed: {
-        title: `${user.username}'s Balance`,
-        //         description: `__Wallet__: ${userCoins}
-        // __Bank__: ${bankCoins}`,
+        author: {
+          name: `${user.username}'s Balance`,
+          icon_url: user.dynamicAvatarURL(),
+        },
         fields: [
-          { name: 'Wallet', value: userCoins.toString() },
-          { name: 'Bank', value: bankCoins.toString() },
+          { name: 'Wallet', value: userCoins.toString(), inline: true },
+          { name: 'Bank', value: bankCoins.toString(), inline: true },
         ],
         footer: {
           text: `Total: ${userCoins + bankCoins}`,

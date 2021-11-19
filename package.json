@@ -10,7 +10,8 @@
     "lint": "eslint src",
     "lint:fix": "eslint --fix src || true",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run lint"
+    "prepublishOnly": "npm run lint",
+    "buildNRun": "npm run build && node ."
   },
   "type": "module",
   "dependencies": {

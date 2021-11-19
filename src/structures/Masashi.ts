@@ -82,7 +82,7 @@ export default class Masashi extends Client {
       for (const alias of command.config.aliases) {
         this.aliases.set(alias, command.help.name);
       }
-      logger.info(`Loaded command '${command.help.name}'!`);
+      logger.info(`Loaded command '\u001b[32m${command.help.name}\u001b[37m'!`);
     }
   }
 
@@ -91,7 +91,7 @@ export default class Masashi extends Client {
     for (const eventClass of events) {
       const event = new eventClass(this);
       this.on(event.name, (...args) => event.run(...args));
-      logger.info(`Loaded event '${event.name}'!`);
+      logger.info(`Loaded event '\u001b[33m${event.name}\u001b[37m'!`);
     }
   }
 

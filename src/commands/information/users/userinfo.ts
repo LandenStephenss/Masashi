@@ -7,7 +7,10 @@ export default class UserInfo extends InfoCommand {
     user: {
       resolve: (user: string) => this.client.resolveUser(user)!,
       validate: (user: unknown) => user !== undefined,
-      optional: true
+      optional: true,
+      onFail: (_: unknown, value: unknown) => 
+        `Who is \`${value}\`, try using a valid user next time`,
+      matchRest: true
     }
   };
 
@@ -20,7 +23,7 @@ export default class UserInfo extends InfoCommand {
     });
   }
 
-  run({message, args: { user }}: CommandContext<this>) {
+  run({ message, args: { user }}: CommandContext<this>) {
     user = user ?? message.author;
     const guildMember = this.client.guilds.get(message.channel.guild.id)
       ?.members.get(user.id)!;
@@ -34,12 +37,12 @@ export default class UserInfo extends InfoCommand {
         fields: [
           {
             name: 'Created At',
-            value: `<t:${user.createdAt / 1000}>`,
+            value: `<t:${Math.floor(user.createdAt / 1000)}>`,
             inline: true,
           },
           {
             name: 'Joined At',
-            value: `<t:${guildMember.joinedAt! / 1000}>`,
+            value: `<t:${Math.floor(guildMember.joinedAt! / 1000)}>`,
           },
           {
             name: `${guildMember.roles.length} Roles`,

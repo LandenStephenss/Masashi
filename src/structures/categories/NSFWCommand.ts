@@ -7,7 +7,7 @@ export default abstract class NSFWCommand extends Command {
   constructor(data: CommandData) {
     super({
       category: 'nsfw',
-      developer: true,
+      developer: false,
       ...data,
     });
   }
