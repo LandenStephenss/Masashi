@@ -36,29 +36,6 @@ export default class MessageCreateEvent extends Event {
         noXP.delete(user.id);
       }, 60000);
     }
-
-    // if(!noXP.has(user.id)) {
-    //   noXP.add(user.id);
-    //   user.addXP(randomXP);
-    //   const userXP = await user.getXP();
-    //   const userLevel = await user.getLevel();
-    //   const nextLevel = levels[userLevel + 1];
-    //   let lvlUp: Message<TextChannel>[];
-    //   console.log(nextLevel);
-    //   if(userXP > nextLevel.xp) {
-    //     await user.increaseLevel();
-    //     lvlUp = await this.createMessages(
-    //       message,
-    //       `You're now level **${nextLevel.level}**!`
-    //     );
-    //   }
-    //   setTimeout(() => {
-    //     noXP.delete(user.id);
-    //     if (lvlUp) {
-    //       this.deleteMessages(message.channel.id, lvlUp);
-    //     }
-    //   }, 5000);
-    // }
   }
 
   async startDrop(message: Message<TextChannel>, multiplier: number) {
