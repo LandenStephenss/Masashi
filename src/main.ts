@@ -6,6 +6,7 @@ const masashi = new Client(`Bot ${process.env['DISCORD_TOKEN']}`, {
   messageLimit: 0,
   defaultImageFormat: 'png',
   defaultImageSize: 1024,
-  restMode: true
+  restMode: true,
+  intents: []
 });
 await masashi.start();

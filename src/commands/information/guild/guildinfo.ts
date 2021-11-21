@@ -23,7 +23,7 @@ export default class Guildinfo extends InfoCommand {
       embed: {
         author: {
           name: guild.name,
-          icon_url: guild.dynamicIconURL(),
+          icon_url: guild.dynamicIconURL() ?? undefined,
         },
         fields: [
           {
