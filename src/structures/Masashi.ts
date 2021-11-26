@@ -111,13 +111,11 @@ export default class Masashi extends Client {
   async getDevelopers() {
     this.developers = process.env['DEVELOPERS']!.split(',');
     const appInfo = await this.getOAuthApplication();
-    if(!appInfo) {
-      return
+    if(appInfo.team !== null) {
+      for (const member of appInfo.team.members) {
+        this.developers.push(member.user.id);
+      }
     }
-    for (const member of appInfo.team!.members) {
-      this.developers.push(member.user.id);
-    }
-  }
 }
 
 interface AwaitReactionInput {
