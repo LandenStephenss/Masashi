@@ -116,6 +116,7 @@ export default class Masashi extends Client {
         this.developers.push(member.user.id);
       }
     }
+  }
 }
 
 interface AwaitReactionInput {
