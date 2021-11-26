@@ -11,12 +11,16 @@ export default class Database {
 
   async start() {
     const mongo = new MongoClient(process.env['DATABASE_URI']!);
-    await mongo.connect();
-    logger.info('connected to database!');
+    try {
+      await mongo.connect();
+      logger.info('connected to database!');
 
-    const db = mongo.db('masashi');
-    this.userDB = db.collection('users');
-    this.guildDB = db.collection('guilds');
+      const db = mongo.db('masashi');
+      this.userDB = db.collection('users');
+      this.guildDB = db.collection('guilds'); 
+    } catch(e) {
+      console.error(e); 
+    }
   }
 
   // GUILD METHODS
